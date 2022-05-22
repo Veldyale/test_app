@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+  test_app_db:
+    image: postgres:12
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+  django:
+    container_name: test_app
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command:  bash -c "python /usr/src/test_app/manage.py migrate --noinput &&
+              python /usr/src/test_app/manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/usr/src/test_app
+    depends_on:
+      - test_app_db
+
+
+volumes:
+  postgres_data:
